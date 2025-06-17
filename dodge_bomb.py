@@ -42,12 +42,12 @@ def gameover(screen: pg.Surface) -> None:
 
     fonto = pg.font.Font(None, 80)  #画面に文字を表示
     txt = fonto.render("Game Over" , True, (255, 255, 255))
-    yoko, tate = 400, 325
-    screen.blit(txt, [yoko, tate])
+    text_rct = txt.get_rect(center=(WIDTH//2, HEIGHT//2))
+    screen.blit(txt, text_rct)
 
     kk_over_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)  #泣いてるこうかとんを表示
-    screen.blit(kk_over_img, [yoko-75, tate])
-    screen.blit(kk_over_img, [yoko+325, tate])
+    screen.blit(kk_over_img, [text_rct[0]-75, text_rct[1]])
+    screen.blit(kk_over_img, [text_rct[0]+325, text_rct[1]])
     pg.display.update()
 
     time.sleep(5)  #画面を５秒停止

@@ -30,6 +30,11 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
 
 
 def gameover(screen: pg.Surface) -> None:
+    """
+    引数：スクリーンの大きさ
+    戻り値：なし
+    こうかとんと爆弾が触れたらゲームオーバーの画面を表示する
+    """
     bl_img = pg.Surface((WIDTH, HEIGHT))  #四角形のSurfaceを作る
     pg.Rect(0, 0, WIDTH, HEIGHT)  #画面に四角を表示
     bl_img.set_alpha(200)
@@ -48,9 +53,12 @@ def gameover(screen: pg.Surface) -> None:
     time.sleep(5)  #画面を５秒停止
 
 
-
-
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    引数：なし
+    戻り値：こうかとんの大きさのリストと速さのリスト
+    時間経過で大きさと速さが変更される
+    """
     bb_accs = [a for a in range(1, 11)]  #加速度の設定
     bb_img_lst = []
     for r in range(1, 11):  #大きさの設定
@@ -59,6 +67,24 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
         bb_img.set_colorkey((0,0,0))
         bb_img_lst.append(bb_img)  #大きさをlistに格納
     return bb_accs, bb_img_lst
+
+
+def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
+    """
+    引数：進む向き
+    戻り値：こうかとんの向き
+    進む方向にこうかとんが向く
+    """
+    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    if sum_mv[0] != 0 and sum_mv[1] != 0:
+        kk_img = pg.transform.rotozoom(kk_img, 45, 1.0)
+    if sum_mv[0] == 0 and sum_mv[1] != 0:
+        kk_img = pg.transform.rotozoom(kk_img, 90, 1.0)
+    if sum_mv[0] == -5:
+        kk_img = pg.transform.flip(kk_img, True, False)
+    return kk_img
+
+
 
 
 def main():
@@ -97,6 +123,7 @@ def main():
             if key_lst[key]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+            vx, vy = get_kk_img(tuple(sum_mv))
 
         # if key_lst[pg.K_UP]:
         #     sum_mv[1] -= 5

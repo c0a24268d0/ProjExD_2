@@ -48,6 +48,19 @@ def gameover(screen: pg.Surface) -> None:
     time.sleep(5)  #画面を５秒停止
 
 
+
+
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    bb_accs = [a for a in range(1, 11)]  #加速度の設定
+    bb_img_lst = []
+    for r in range(1, 11):  #大きさの設定
+        bb_img = pg.Surface((20*r,20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_img.set_colorkey((0,0,0))
+        bb_img_lst.append(bb_img)  #大きさをlistに格納
+    return bb_accs, bb_img_lst
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -55,15 +68,19 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20,20))  #一辺が20の正方形Surfaceを作る
-    pg.draw.circle(bb_img,(255,0,0),(10,10),10)  #赤い円を描く
-    bb_img.set_colorkey((0,0,0))  #黒を透明にする
+    
+    # bb_img = pg.Surface((20,20))  #一辺が20の正方形Surfaceを作る
+    # pg.draw.circle(bb_img,(255,0,0),(10,10),10)  #赤い円を描く
+    # bb_img.set_colorkey((0,0,0))  #黒を透明にする
+    vx, vy = +5, +5
+    tmr = 0
+    bb_accs, bb_imgs = init_bb_imgs()
+    avx = vx*bb_accs[min(tmr//500, 9)]  #爆弾の速さのlistから値をとる
+    bb_img = bb_imgs[min(tmr//500, 9)]  #爆弾の大きさのlistから値をとる
     bb_rct = bb_img.get_rect()  #爆弾のRectを取得
     bb_rct.centerx = random.randint(0,WIDTH)  #爆弾の横座標 
     bb_rct.centery = random.randint(0,HEIGHT)  #爆弾の縦座標
-    vx, vy = +5, +5
     clock = pg.time.Clock()
-    tmr = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -93,7 +110,11 @@ def main():
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])  #移動を無かったことにする
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx, vy) #爆弾の移動
+        avx = vx*bb_accs[min(tmr//500, 9)]  #爆弾の速さのlistから値をとる
+        bb_img = bb_imgs[min(tmr//500, 9)]  #爆弾の大きさのlistから値をとる
+        bb_rct.width  #爆弾の横幅を変更
+        bb_rct.height  #爆弾の高さを変更
+        bb_rct.move_ip(avx, vy) #爆弾の移動
         yoko, tate = check_bound(bb_rct)
         if not yoko:  #横方向にはみ出ていたら
             vx *= -1
